@@ -1,0 +1,27 @@
+[
+  {
+    "comment_id": "example-positive",
+    "product_id": "product-1",
+    "title": "عالی بود",
+    "body": "کیفیتش خیلی خوبه و دوباره می‌خرم",
+    "advantages": "",
+    "disadvantages": ""
+  },
+  {
+    "comment_id": "example-negative",
+    "product_id": "product-2",
+    "title": "نخرید",
+    "body": "کیفیت خیلی بدی داشت و مرجوعش کردم",
+    "advantages": "",
+    "disadvantages": ""
+  },
+  {
+    "comment_id": "example-neutral",
+    "product_id": "product-3",
+    "title": "معمولی",
+    "body": "نسبت به قیمت بد نیست ولی انتظار بیشتری داشتم",
+    "advantages": "",
+    "disadvantages": ""
+  }
+]
+

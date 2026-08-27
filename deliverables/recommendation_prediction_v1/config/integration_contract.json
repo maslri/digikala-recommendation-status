@@ -1,0 +1,50 @@
+{
+  "component": "recommendation_prediction",
+  "schema_version": "1.0.0",
+  "model_release": "digikala-rec-xlm-roberta-2pct-v1.0.0",
+  "input_schema": {
+    "comment_id": "string|null",
+    "product_id": "string|null",
+    "title": "string",
+    "body": "string",
+    "advantages": "string",
+    "disadvantages": "string",
+    "recommendation_status": "recommended|not_recommended|no_idea|null"
+  },
+  "output_schema": {
+    "component": "recommendation_prediction",
+    "schema_version": "1.0.0",
+    "comment_id": "string|null",
+    "product_id": "string|null",
+    "label": [
+      "recommended",
+      "not_recommended",
+      "no_idea"
+    ],
+    "scores": {
+      "recommended": "float_uncalibrated|null",
+      "not_recommended": "float_uncalibrated|null",
+      "no_idea": "float_uncalibrated|null"
+    },
+    "confidence_score": "float_uncalibrated|null",
+    "score_margin": "float_uncalibrated|null",
+    "scores_are_calibrated_probabilities": false,
+    "model_version": "string",
+    "artifact_sha256": "string",
+    "preprocessing_version": "fa_light_v1",
+    "source": [
+      "observed",
+      "model_prediction"
+    ],
+    "latency_ms": "float"
+  },
+  "label_id_order": {
+    "0": "recommended",
+    "1": "not_recommended",
+    "2": "no_idea"
+  },
+  "integration_rule": "Use an observed valid recommendation_status when present; predict only missing or new comments.",
+  "empty_input_rule": "Reject when title, body, advantages and disadvantages are all empty.",
+  "confidence_warning": "Scores are uncalibrated softmax outputs and must not be presented as true probabilities."
+}
+

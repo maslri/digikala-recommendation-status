@@ -1,0 +1,40 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python and notebook caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Large datasets, model weights, and generated outputs
+data/
+tmp/
+outputs/
+checkpoint-*/
+**/checkpoint-*/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.joblib
+*.zip
+*.tar
+*.tar.gz
+
+# Local tooling and OS files
+.venv/
+venv/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+

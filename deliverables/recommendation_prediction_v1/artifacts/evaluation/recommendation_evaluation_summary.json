@@ -1,0 +1,51 @@
+{
+  "task": "digikala_recommendation_status_final_evaluation",
+  "decision": "PASS",
+  "seed": 42,
+  "source_sha256": "c7a8aa3020334fde8ec24944576a03fe5785e6fe12cd01042f5836632ddf8297",
+  "test_rows": 9662,
+  "test_groups": 8215,
+  "model": "xlm_roberta_base",
+  "checkpoint": "FacebookAI/xlm-roberta-base",
+  "resolved_base_revision": "e73636d4f797dec63c3081bb6ed5c7b0bb3f2089",
+  "max_length": 128,
+  "baseline_metrics": {
+    "macro_f1": 0.6611412090831573,
+    "weighted_f1": 0.8383702565246943,
+    "accuracy": 0.8415441937487063,
+    "f1_recommended": 0.9234181343770385,
+    "f1_not_recommended": 0.6992366412213741,
+    "f1_no_idea": 0.36076885165105965
+  },
+  "transformer_metrics": {
+    "macro_f1": 0.7171704486592764,
+    "weighted_f1": 0.8553527913998584,
+    "accuracy": 0.8422686814324156,
+    "f1_recommended": 0.9218365673681334,
+    "f1_not_recommended": 0.7594810379241517,
+    "f1_no_idea": 0.470193740685544
+  },
+  "absolute_macro_f1_gain": 0.05602923957611905,
+  "bootstrap": {
+    "iterations": 1000,
+    "resampling_unit": "text_group_id",
+    "transformer_macro_f1_ci95": [0.7061317701709765, 0.7290574004906409],
+    "baseline_macro_f1_ci95": [0.648623277525637, 0.6753333944686817],
+    "paired_macro_f1_delta_ci95": [0.04228172214949992, 0.06981326135094473],
+    "paired_probability_transformer_better": 1.0
+  },
+  "latency_and_cost": {
+    "device": "cuda",
+    "gpu": "Tesla T4",
+    "single_request_p95_ms": 11.476199200015454,
+    "batch_throughput_rows_per_second": 861.6425980886825,
+    "peak_gpu_memory_bytes": 1414517248,
+    "model_artifact_size_bytes": 1134368192,
+    "api_cost_usd": 0.0
+  },
+  "error_rows": 1524,
+  "manual_review_rows": 60,
+  "confidence_note": "Softmax outputs are uncalibrated model scores.",
+  "scope_note": "Current result is based on the frozen 2% sample; 10% scaling is future work."
+}
+
