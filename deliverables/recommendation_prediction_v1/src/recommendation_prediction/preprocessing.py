@@ -12,7 +12,9 @@ VALID_LABELS = ("recommended", "not_recommended", "no_idea")
 ID2LABEL = {index: label for index, label in enumerate(VALID_LABELS)}
 LABEL2ID = {label: index for index, label in ID2LABEL.items()}
 NULL_TOKENS = {"", "nan", "none", "null", "na", "n/a"}
-ARABIC_TO_PERSIAN = str.maketrans({"ي": "ی", "ى": "ی", "ك": "ک"})
+ARABIC_TO_PERSIAN = str.maketrans(
+    {"\u064a": "\u06cc", "\u0649": "\u06cc", "\u0643": "\u06a9"}
+)
 PREPROCESSING_VERSION = "fa_light_v1"
 
 
@@ -60,4 +62,3 @@ def build_model_text(
     if not text:
         raise ValueError("At least one of title/body/advantages/disadvantages must be non-empty")
     return text
-

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820" role="img" aria-labelledby="title desc">
+  <title id="title">Animated training and inference flow</title>
+  <desc id="desc">Two lightweight animated lanes show how labeled training reviews create a frozen model and how a new review passes through the released model to produce a recommendation label.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#07111f"/><stop offset="1" stop-color="#102841"/></linearGradient>
+    <linearGradient id="model" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0f766e"/><stop offset="1" stop-color="#2563eb"/></linearGradient>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0L12 6L0 12Z" fill="#5eead4"/></marker>
+    <path id="trainPath" d="M235 325H1115"/>
+    <path id="inferPath" d="M235 600H1115"/>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <style>
+      text{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#eaf4ff}.eyebrow{font-size:16px;letter-spacing:2px;fill:#5eead4}.title{font-size:40px;font-weight:760}.sub{font-size:18px;fill:#bdd3e7}.lane{fill:#0d2033;stroke:#315779;stroke-width:2}.box{fill:#142d45;stroke:#365c7b;stroke-width:2}.model{fill:url(#model);stroke:#7dd3fc;stroke-width:2}.head{font-size:20px;font-weight:730}.body{font-size:14px;fill:#bdd3e7}.tag{font-size:13px;font-weight:750;fill:#5eead4}.path{stroke:#5eead4;stroke-width:3;fill:none;marker-end:url(#arrow)}.pulse{fill:#fde68a;filter:url(#glow)}.output{fill:#0f766e;stroke:#6ee7b7;stroke-width:2}.frozen{fill:#102b3b;stroke:#60a5fa;stroke-width:2}.small{font-size:13px;fill:#9db7cb}
+      @media (prefers-reduced-motion: reduce){.moving{display:none}.pulse-ring{animation:none}}
+    </style>
+  </defs>
+  <rect width="1400" height="820" rx="28" fill="url(#bg)"/>
+  <text x="70" y="65" class="eyebrow">TRAIN ONCE · SERVE MANY TIMES</text>
+  <text x="70" y="115" class="title">Training creates the artifact; inference consumes it</text>
+  <text x="70" y="150" class="sub">The released classifier is deterministic at inference and operates independently from the LLM.</text>
+
+  <rect x="60" y="205" width="1280" height="235" rx="24" class="lane"/>
+  <text x="90" y="245" class="tag">TRAINING LANE</text>
+  <rect x="100" y="270" width="210" height="110" rx="18" class="box"/><text x="205" y="315" text-anchor="middle" class="head">Train + validation</text><text x="205" y="345" text-anchor="middle" class="body">535,841 labeled rows</text>
+  <rect x="390" y="270" width="210" height="110" rx="18" class="box"/><text x="495" y="315" text-anchor="middle" class="head">Fine-tuning</text><text x="495" y="345" text-anchor="middle" class="body">1.947 epochs · all layers</text>
+  <rect x="680" y="270" width="210" height="110" rx="18" class="box"/><text x="785" y="315" text-anchor="middle" class="head">Locked evaluation</text><text x="785" y="345" text-anchor="middle" class="body">Macro-F1 0.7292</text>
+  <rect x="970" y="270" width="250" height="110" rx="18" class="frozen"/><text x="1095" y="315" text-anchor="middle" class="head">Frozen v2 artifact</text><text x="1095" y="345" text-anchor="middle" class="body">PASS_PROMOTE_V2</text>
+  <path d="M310 325H390M600 325H680M890 325H970" class="path"/>
+  <circle r="9" class="moving pulse"><animateMotion dur="5s" repeatCount="indefinite" begin="0s"><mpath href="#trainPath"/></animateMotion></circle>
+
+  <rect x="60" y="480" width="1280" height="235" rx="24" class="lane"/>
+  <text x="90" y="520" class="tag">INFERENCE LANE</text>
+  <rect x="100" y="545" width="210" height="110" rx="18" class="box"/><text x="205" y="590" text-anchor="middle" class="head">New review</text><text x="205" y="620" text-anchor="middle" class="body">title · body · pros · cons</text>
+  <rect x="390" y="545" width="210" height="110" rx="18" class="box"/><text x="495" y="590" text-anchor="middle" class="head">Tokenize</text><text x="495" y="620" text-anchor="middle" class="body">fa_light_v1 · max 128</text>
+  <rect x="680" y="545" width="210" height="110" rx="18" class="model"/><text x="785" y="590" text-anchor="middle" class="head">Run frozen model</text><text x="785" y="620" text-anchor="middle" class="body">No weight updates</text>
+  <rect x="970" y="545" width="250" height="110" rx="18" class="output"/><text x="1095" y="585" text-anchor="middle" class="head">Label + scores</text><text x="1095" y="615" text-anchor="middle" class="body">3-class structured output</text><text x="1095" y="638" text-anchor="middle" class="small">Ready for the LLM router</text>
+  <path d="M310 600H390M600 600H680M890 600H970" class="path"/>
+  <circle r="9" class="moving pulse"><animateMotion dur="3.5s" repeatCount="indefinite" begin="-.8s"><mpath href="#inferPath"/></animateMotion></circle>
+
+  <rect x="475" y="748" width="450" height="45" rx="22" class="frozen"/><text x="700" y="776" text-anchor="middle" class="body">Training uses labels. Inference never retrains the model.</text>
+</svg>

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900" role="img" aria-labelledby="title desc">
+  <title id="title">Fine-tuned XLM-RoBERTa classification architecture</title>
+  <desc id="desc">Review fields are normalized, tokenized to 128 tokens, encoded by twelve XLM-RoBERTa transformer blocks, and classified into three recommendation labels.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#07111f"/><stop offset="1" stop-color="#102841"/></linearGradient>
+    <linearGradient id="encoder" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#155e75"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0L12 6L0 12Z" fill="#67e8f9"/></marker>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="8" stdDeviation="9" flood-opacity=".3"/></filter>
+    <style>
+      text{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#eaf4ff}.eyebrow{font-size:16px;letter-spacing:2px;fill:#5eead4}.title{font-size:40px;font-weight:760}.sub{font-size:18px;fill:#bdd3e7}.box{fill:#112a42;stroke:#315779;stroke-width:2}.enc{fill:url(#encoder);stroke:#7dd3fc;stroke-width:2}.head{font-size:22px;font-weight:730}.body{font-size:15px;fill:#bdd3e7}.small{font-size:13px;fill:#9db7cb}.flow{fill:none;stroke:#67e8f9;stroke-width:3;marker-end:url(#arrow)}.chip{fill:#173b57;stroke:#3b6382}.chiptext{font-size:13px;font-weight:700}.labelA{fill:#0f766e}.labelB{fill:#1d4ed8}.labelC{fill:#a16207}.big{font-size:30px;font-weight:850}.note{fill:#302b1b;stroke:#fbbf24}.notetext{font-size:15px;fill:#fde68a}.layer{fill:#ffffff;fill-opacity:.08;stroke:#93c5fd;stroke-opacity:.55}.layertext{font-size:14px;font-weight:650}
+    </style>
+  </defs>
+  <rect width="1400" height="900" rx="28" fill="url(#bg)"/>
+  <text x="70" y="65" class="eyebrow">MODEL ARCHITECTURE</text>
+  <text x="70" y="115" class="title">XLM-RoBERTa base + a three-class prediction head</text>
+  <text x="70" y="150" class="sub">Pre-trained language understanding was adapted by fine-tuning every encoder and classifier weight.</text>
+
+  <g filter="url(#shadow)">
+    <rect x="60" y="235" width="220" height="210" rx="20" class="box"/>
+    <text x="85" y="275" class="head">Review fields</text>
+    <rect x="85" y="300" width="170" height="27" rx="10" class="chip"/><text x="170" y="319" text-anchor="middle" class="chiptext">title</text>
+    <rect x="85" y="334" width="170" height="27" rx="10" class="chip"/><text x="170" y="353" text-anchor="middle" class="chiptext">body</text>
+    <rect x="85" y="368" width="170" height="27" rx="10" class="chip"/><text x="170" y="387" text-anchor="middle" class="chiptext">advantages</text>
+    <rect x="85" y="402" width="170" height="27" rx="10" class="chip"/><text x="170" y="421" text-anchor="middle" class="chiptext">disadvantages</text>
+
+    <rect x="335" y="235" width="220" height="210" rx="20" class="box"/>
+    <text x="360" y="275" class="head">Preprocessing</text>
+    <text x="360" y="313" class="body">fa_light_v1</text><text x="360" y="343" class="body">Field markers</text><text x="360" y="373" class="body">Whitespace cleanup</text>
+    <text x="360" y="415" class="small">No translation or LLM step</text>
+
+    <rect x="610" y="235" width="230" height="210" rx="20" class="box"/>
+    <text x="635" y="275" class="head">Tokenizer</text>
+    <text x="635" y="315" class="big">128</text><text x="703" y="315" class="body">tokens max</text>
+    <text x="635" y="350" class="body">SentencePiece subwords</text><text x="635" y="380" class="body">Attention mask</text><text x="635" y="415" class="small">Long inputs are truncated</text>
+
+    <rect x="900" y="200" width="250" height="290" rx="24" class="enc"/>
+    <text x="1025" y="242" text-anchor="middle" class="head">XLM-R Encoder</text>
+    <rect x="930" y="266" width="190" height="48" rx="12" class="layer"/><text x="1025" y="296" text-anchor="middle" class="layertext">Self-attention: 12 heads</text>
+    <rect x="930" y="324" width="190" height="48" rx="12" class="layer"/><text x="1025" y="354" text-anchor="middle" class="layertext">Hidden size: 768</text>
+    <rect x="930" y="382" width="190" height="48" rx="12" class="layer"/><text x="1025" y="412" text-anchor="middle" class="layertext">Feed-forward: 3,072</text>
+    <text x="1025" y="462" text-anchor="middle" class="big">12 blocks</text>
+
+    <rect x="1205" y="235" width="150" height="210" rx="20" class="box"/>
+    <text x="1280" y="275" text-anchor="middle" class="head">Pooled</text><text x="1280" y="305" text-anchor="middle" class="head">sequence</text>
+    <circle cx="1280" cy="365" r="38" fill="#123f53" stroke="#5eead4" stroke-width="3"/><text x="1280" y="373" text-anchor="middle" class="big">768</text>
+    <text x="1280" y="425" text-anchor="middle" class="small">features</text>
+  </g>
+  <path d="M280 340H335" class="flow"/><path d="M555 340H610" class="flow"/><path d="M840 340H900" class="flow"/><path d="M1150 340H1205" class="flow"/>
+
+  <rect x="410" y="565" width="580" height="105" rx="20" class="box"/>
+  <text x="450" y="605" class="head">Classification head</text>
+  <text x="450" y="640" class="body">Dropout  →  Dense 768  →  tanh  →  Dropout  →  Dense 3</text>
+  <path d="M1280 445V520H700V565" class="flow"/>
+
+  <rect x="250" y="730" width="270" height="95" rx="18" class="labelA"/><text x="385" y="768" text-anchor="middle" class="head">recommended</text><text x="385" y="799" text-anchor="middle" class="body">logit + model score</text>
+  <rect x="565" y="730" width="270" height="95" rx="18" class="labelB"/><text x="700" y="768" text-anchor="middle" class="head">not_recommended</text><text x="700" y="799" text-anchor="middle" class="body">logit + model score</text>
+  <rect x="880" y="730" width="270" height="95" rx="18" class="labelC"/><text x="1015" y="768" text-anchor="middle" class="head">no_idea</text><text x="1015" y="799" text-anchor="middle" class="body">logit + model score</text>
+  <path d="M700 670V700H385V730" class="flow"/><path d="M700 670V730" class="flow"/><path d="M700 700H1015V730" class="flow"/>
+
+  <rect x="70" y="505" width="260" height="120" rx="18" class="note"/>
+  <text x="95" y="540" class="head">Approx. 278M parameters</text><text x="95" y="574" class="notetext">All encoder layers and the new</text><text x="95" y="598" class="notetext">classification head were fine-tuned.</text>
+  <text x="1170" y="760" class="small">Argmax selects the label.</text><text x="1170" y="786" class="small">Scores are not calibrated.</text>
+</svg>

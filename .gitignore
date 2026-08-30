@@ -29,6 +29,9 @@ checkpoint-*/
 *.tar
 *.tar.gz
 
+# Local source documents (not included in the public repository snapshot)
+QBC12 _ AI _ Project 3.pdf
+
 # Local tooling and OS files
 .venv/
 venv/
@@ -37,4 +40,3 @@ venv/
 .DS_Store
 Thumbs.db
 desktop.ini
-

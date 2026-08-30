@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900" role="img" aria-labelledby="title desc">
+  <title id="title">Locked-test comparison of XLM-RoBERTa v1 and v2</title>
+  <desc id="desc">Bar chart comparing Macro-F1, accuracy, weighted F1, and per-class F1 for the two releases, with paired bootstrap evidence for the Macro-F1 gain.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#07111f"/><stop offset="1" stop-color="#102841"/></linearGradient>
+    <linearGradient id="v2" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#2dd4bf"/><stop offset="1" stop-color="#22c55e"/></linearGradient>
+    <style>
+      text{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#eaf4ff}.eyebrow{font-size:16px;letter-spacing:2px;fill:#5eead4}.title{font-size:40px;font-weight:760}.sub{font-size:18px;fill:#bdd3e7}.axis{font-size:14px;fill:#9db7cb}.label{font-size:18px;font-weight:680}.value{font-size:14px;font-weight:750}.v1{fill:#3b82f6}.v2{fill:url(#v2)}.grid{stroke:#54708a;stroke-opacity:.32}.card{fill:#112a42;stroke:#315779;stroke-width:2}.metric{font-size:31px;font-weight:850;fill:#5eead4}.body{font-size:15px;fill:#bdd3e7}.legend{font-size:15px;font-weight:700}.pass{fill:#103a43;stroke:#2dd4bf;stroke-width:2}.tiny{font-size:13px;fill:#9db7cb}
+    </style>
+  </defs>
+  <rect width="1400" height="900" rx="28" fill="url(#bg)"/>
+  <text x="70" y="65" class="eyebrow">LOCKED TEST SET · 9,662 ROWS</text>
+  <text x="70" y="115" class="title">v2 improves every reported headline metric</text>
+  <text x="70" y="150" class="sub">The main selection metric is Macro-F1 because each class receives equal weight.</text>
+  <circle cx="1090" cy="92" r="9" class="v1"/><text x="1110" y="98" class="legend">v1 · 2% train</text><circle cx="1240" cy="92" r="9" class="v2"/><text x="1260" y="98" class="legend">v2 · 10% train</text>
+
+  <g transform="translate(70 220)">
+    <line x1="300" y1="0" x2="300" y2="480" class="grid"/><line x1="500" y1="0" x2="500" y2="480" class="grid"/><line x1="700" y1="0" x2="700" y2="480" class="grid"/><line x1="900" y1="0" x2="900" y2="480" class="grid"/><line x1="1100" y1="0" x2="1100" y2="480" class="grid"/>
+    <text x="300" y="510" text-anchor="middle" class="axis">0.00</text><text x="500" y="510" text-anchor="middle" class="axis">0.25</text><text x="700" y="510" text-anchor="middle" class="axis">0.50</text><text x="900" y="510" text-anchor="middle" class="axis">0.75</text><text x="1100" y="510" text-anchor="middle" class="axis">1.00</text>
+
+    <text x="0" y="42" class="label">Macro-F1</text><rect x="300" y="12" width="574" height="22" rx="11" class="v1"/><rect x="300" y="42" width="583" height="22" rx="11" class="v2"/><text x="884" y="29" class="value">0.7172</text><text x="893" y="59" class="value">0.7292</text>
+    <text x="0" y="132" class="label">Accuracy</text><rect x="300" y="102" width="674" height="22" rx="11" class="v1"/><rect x="300" y="132" width="678" height="22" rx="11" class="v2"/><text x="984" y="119" class="value">0.8423</text><text x="988" y="149" class="value">0.8470</text>
+    <text x="0" y="222" class="label">Weighted-F1</text><rect x="300" y="192" width="684" height="22" rx="11" class="v1"/><rect x="300" y="222" width="688" height="22" rx="11" class="v2"/><text x="994" y="209" class="value">0.8554</text><text x="998" y="239" class="value">0.8606</text>
+    <text x="0" y="312" class="label">F1 · recommended</text><rect x="300" y="282" width="737" height="22" rx="11" class="v1"/><rect x="300" y="312" width="739" height="22" rx="11" class="v2"/><text x="1047" y="299" class="value">0.9218</text><text x="1049" y="329" class="value">0.9238</text>
+    <text x="0" y="402" class="label">F1 · not_recommended</text><rect x="300" y="372" width="608" height="22" rx="11" class="v1"/><rect x="300" y="402" width="613" height="22" rx="11" class="v2"/><text x="918" y="389" class="value">0.7595</text><text x="923" y="419" class="value">0.7668</text>
+    <text x="0" y="492" class="label">F1 · no_idea</text><rect x="300" y="462" width="376" height="22" rx="11" class="v1"/><rect x="300" y="492" width="398" height="22" rx="11" class="v2"/><text x="686" y="479" class="value">0.4702</text><text x="708" y="509" class="value">0.4969</text>
+  </g>
+
+  <rect x="70" y="760" width="365" height="95" rx="18" class="pass"/><text x="95" y="797" class="body">Absolute Macro-F1 gain</text><text x="95" y="831" class="metric">+0.0120</text>
+  <rect x="470" y="760" width="410" height="95" rx="18" class="card"/><text x="495" y="797" class="body">Paired group-bootstrap delta CI95</text><text x="495" y="831" class="metric">[0.0036, 0.0202]</text>
+  <rect x="915" y="760" width="415" height="95" rx="18" class="card"/><text x="940" y="797" class="body">Probability v2 is better</text><text x="940" y="831" class="metric">0.997</text><text x="1225" y="830" class="tiny">1,000 iterations</text>
+</svg>

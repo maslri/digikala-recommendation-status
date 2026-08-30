@@ -1,34 +1,34 @@
 # %% [markdown]
-# # Digikala Recommendation Status — XLM-RoBERTa روی train ده‌درصدی
+# # Digikala Recommendation Status — XLM-RoBERTa with a 10% training set
 #
-# این Notebook با بودجهٔ حدود **۱۰٪ داده** برای بهترکردن `Macro-F1` طراحی شده است. مدل پایه،
-# preprocessing، ترتیب برچسب‌ها و test/validation نسخهٔ ۲٪ ثابت می‌مانند؛ train بزرگ‌تر،
-# group-safe و از گروه‌های جدیدِ دارای label conflict پاک می‌شود. بنابراین این یک آزمایش بهینه‌سازی
-# است، نه برآورد علّیِ خالص اثر حجم داده.
+# This notebook uses approximately **10% of the data** to improve `Macro-F1`. The base model,
+# preprocessing, label order, and the 2% version's test/validation splits remain fixed; the larger training set
+# is group-safe and excludes newly sampled groups with label conflicts. This is therefore an optimization experiment,
+# not a pure causal estimate of the effect of data volume.
 #
-# اجرای کار دو فاز دارد:
+# The workflow has two phases:
 #
-# 1. `validation`: ساخت train ده‌درصدی، آموزش از checkpoint پایه و ارزیابی روی validation قفل‌شده.
-# 2. `final`: فقط پس از PASS فاز اول، آموزش نهایی از همان checkpoint پایه و یک بار ارزیابی test.
+# 1. `validation`: build the 10% train set, train from the base checkpoint, and evaluate on locked validation.
+# 2. `final`: only after validation passes, train from the same base checkpoint and evaluate test once.
 #
-# نسخهٔ عمومی ۲٪ هرگز overwrite نمی‌شود. نسخهٔ ۱۰٪ فقط در صورت عبور از همهٔ گیت‌ها نام v2 می‌گیرد.
+# The public 2% release is never overwritten. The 10% candidate is named v2 only after all release gates pass.
 
 # %% [markdown]
-# ## ورودی‌های Kaggle و روش اجرا
+# ## Kaggle inputs and execution
 #
-# در `Settings > Accelerator` یک **GPU T4** و در `Settings > Internet` گزینهٔ On را انتخاب کنید.
-# سپس با `Add Input` این دو خروجی را اضافه کنید:
+# Select a **T4 GPU** under `Settings > Accelerator` and enable `Settings > Internet`.
+# Then attach these two outputs with `Add Input`:
 #
-# - خروجی baseline که فایل `sampled_split_manifest.csv` را دارد.
-# - Dataset عمومی نسخهٔ فعلی:
+# - the baseline output containing `sampled_split_manifest.csv`;
+# - the current public release Dataset:
 #   `maslri/digikala-recommendation-status-xlm-roberta-v1`
 #
-# اجرای اول: `RUN_PHASE = 'validation'`. بعد از اتمام، Output را `Save Version` کنید.
-# اگر validation PASS شد، همان Saved Version را به‌عنوان Input اضافه کنید، مقدار را به
-# `RUN_PHASE = 'final'` تغییر دهید و دوباره اجرا کنید.
+# First run: set `RUN_PHASE = 'validation'`. On completion, use `Save Version` for the output.
+# If validation passes, attach that Saved Version as an Input, change the value to
+# `RUN_PHASE = 'final'`, and run again.
 #
-# checkpointهای داخل `/kaggle/working` فقط در همان session باقی می‌مانند. برای ادامه در session
-# جدید باید Output اجرای نیمه‌تمام را Save Version و در اجرای جدید Add Input کنید.
+# Checkpoints under `/kaggle/working` persist only in the current session. To continue in a new session,
+# save the partial run output as a version and attach it to the new run with Add Input.
 
 # %%
 from __future__ import annotations
@@ -36,7 +36,7 @@ from __future__ import annotations
 import subprocess
 import sys
 
-# این سلول باید پیش از import کردن torch/transformers اجرا شود. torch پیش‌فرض Kaggle تغییر نمی‌کند.
+# Run this cell before importing torch/transformers. The default Kaggle torch build is not changed.
 subprocess.check_call([
     sys.executable, '-m', 'pip', 'install', '-q',
     'transformers==4.57.6', 'accelerate>=1.2,<2',
@@ -81,7 +81,7 @@ from transformers import (
     set_seed,
 )
 
-# فقط این مقدار را بین دو اجرای اصلی تغییر دهید: validation یا final
+# Change only this value between the two main runs: validation or final.
 RUN_PHASE = os.getenv('DIGIKALA_10PCT_PHASE', 'validation').strip().lower()
 if RUN_PHASE not in {'validation', 'final'}:
     raise ValueError("RUN_PHASE must be 'validation' or 'final'.")
@@ -106,7 +106,7 @@ PREPROCESSING_VERSION = 'fa_light_v1'
 
 TARGET_TRAIN_FRACTION = 0.10
 CANDIDATE_POOL_FRACTION = 0.20
-# بهینه‌سازی برای Macro-F1: enrichment ملایم کلاس‌های کم‌تعداد، نه balance کامل.
+# Optimize Macro-F1 with moderate minority enrichment, not full balancing.
 TARGET_TRAIN_CLASS_RATIOS = {
     'recommended': 0.70,
     'not_recommended': 0.14,
@@ -126,7 +126,7 @@ WARMUP_RATIO = 0.1
 EVAL_SAVE_STEPS = 2_000
 BOOTSTRAP_ITERATIONS = 1_000
 
-# Overrideهای اختیاری؛ معمولاً خالی بمانند.
+# Optional overrides; normally leave these empty.
 COMMENTS_PATH_OVERRIDE = os.getenv('DIGIKALA_COMMENTS_PATH') or None
 MANIFEST_PATH_OVERRIDE = os.getenv('DIGIKALA_MANIFEST_PATH') or None
 RESUME_CHECKPOINT_OVERRIDE = os.getenv('DIGIKALA_RESUME_CHECKPOINT') or None
@@ -168,14 +168,14 @@ torch.manual_seed(SEED)
 set_seed(SEED)
 
 # %% [markdown]
-# ## بررسی سخت‌افزار
+# ## Hardware validation
 #
-# این Notebook عمداً PyTorch را reinstall نمی‌کند. در نتیجه خطای قبلی P100 با build ناسازگار
-# تکرار نمی‌شود؛ اگر GPU/build سازگار نباشند، همین ابتدا با پیام روشن متوقف می‌شویم.
+# This notebook intentionally does not reinstall PyTorch, avoiding the previous P100/build incompatibility.
+# If the GPU and build are incompatible, execution stops here with a clear error.
 
 # %%
 if not torch.cuda.is_available():
-    raise RuntimeError('GPU پیدا نشد. در Kaggle یک T4 انتخاب و session را restart کنید.')
+    raise RuntimeError('No GPU was found. Select a T4 in Kaggle and restart the session.')
 
 GPU_NAME = torch.cuda.get_device_name(0)
 GPU_CAPABILITY = tuple(torch.cuda.get_device_capability(0))
@@ -183,11 +183,11 @@ DEVICE_ARCH = f'sm_{GPU_CAPABILITY[0]}{GPU_CAPABILITY[1]}'
 COMPILED_ARCHES = torch.cuda.get_arch_list()
 if GPU_CAPABILITY < (7, 5) or DEVICE_ARCH not in COMPILED_ARCHES:
     raise RuntimeError(
-        f'GPU/build ناسازگار است: gpu={GPU_NAME}, required={DEVICE_ARCH}, compiled={COMPILED_ARCHES}. '
-        'برای این Notebook از T4 استفاده کنید.'
+        f'GPU/build mismatch: gpu={GPU_NAME}, required={DEVICE_ARCH}, compiled={COMPILED_ARCHES}. '
+        'Use a T4 for this notebook.'
     )
 
-# اجرای kernel واقعی، نه صرفاً cuda.is_available().
+# Execute a real kernel rather than relying only on cuda.is_available().
 probe = (torch.ones((32, 32), device='cuda', dtype=torch.float16) @
          torch.ones((32, 32), device='cuda', dtype=torch.float16)).sum()
 torch.cuda.synchronize()
@@ -208,7 +208,7 @@ runtime_info = {
 print(json.dumps(runtime_info, ensure_ascii=False, indent=2))
 
 # %% [markdown]
-# ## دریافت منبع pin‌شده و manifest رسمی ۲٪
+# ## Retrieve the pinned source and official 2% manifest
 
 # %%
 def file_sha256(path: Path, block_size: int = 8 * 1024 * 1024) -> str:
@@ -243,7 +243,7 @@ def get_source_csv(override: str | None = None) -> Path:
     try:
         socket.getaddrinfo('huggingface.co', 443, type=socket.SOCK_STREAM)
     except socket.gaierror as error:
-        raise RuntimeError('Kaggle Internet را روشن و session را restart کنید.') from error
+        raise RuntimeError('Enable Kaggle Internet and restart the session.') from error
     try:
         from huggingface_hub import hf_hub_download
         cached = Path(hf_hub_download(
@@ -310,13 +310,13 @@ def load_official_manifest(override: str | None = None) -> tuple[pd.DataFrame, P
             errors.append(f'{path}: {error}')
     if not valid:
         raise FileNotFoundError(
-            'manifest رسمی ۲٪ پیدا نشد. Output baseline را Add Input کنید. Checked: ' + ' | '.join(errors[:5])
+            'The official 2% manifest was not found. Attach the baseline output. Checked: ' + ' | '.join(errors[:5])
         )
     distinct_digests = {digest for _, _, digest in valid}
     if len(distinct_digests) > 1 and not override:
         raise RuntimeError(
-            'چند manifest با profile یکسان ولی محتوای متفاوت پیدا شد. '
-            'مسیر درست را در DIGIKALA_MANIFEST_PATH مشخص کنید.'
+            'Multiple manifests have the same profile but different content. '
+            'Set the correct path in DIGIKALA_MANIFEST_PATH.'
         )
     frame, path, _ = sorted(valid, key=lambda item: len(str(item[1])))[0]
     return frame, path
@@ -329,17 +329,17 @@ print('Official manifest:', manifest_path)
 display(pd.DataFrame(split_profile(official_manifest)).T)
 
 # %% [markdown]
-# ## preprocessing ثابت و نمونه‌گیری group-safe
+# ## Fixed preprocessing and group-safe sampling
 #
-# train قدیمی دقیقاً حفظ می‌شود. validation/test قدیمی دقیقاً قفل می‌مانند. برای افزایش Macro-F1،
-# داده‌های جدید فقط از گروه‌های متنی کاملاً جدید می‌آیند، گروه جدید متناقض کنار گذاشته می‌شود و
-# انتخاب با quota کلاسی train قبلی به‌صورت اتمی انجام می‌شود. این سیاست عمداً با sampling سادهٔ v1
-# یکسان نیست و اثر مشترک «دادهٔ بیشتر + پاک‌سازی گروهی» را می‌سنجد.
+# The original train split is preserved exactly, while validation and test remain locked. To improve Macro-F1,
+# new data comes only from entirely new text groups, newly conflicting groups are excluded, and
+# selection uses atomic class quotas relative to the previous train split. This policy intentionally differs from v1's simple sampling
+# and measures the joint effect of more data plus group-level cleaning.
 
 # %%
 TEXT_COLUMNS = ['id', 'title', 'body', 'advantages', 'disadvantages', 'recommendation_status', 'product_id']
 NULL_TOKENS = {'', 'nan', 'none', 'null', 'na', 'n/a'}
-ARABIC_TO_PERSIAN = str.maketrans({'ي': 'ی', 'ى': 'ی', 'ك': 'ک'})
+ARABIC_TO_PERSIAN = str.maketrans({'\u064a': '\u06cc', '\u0649': '\u06cc', '\u0643': '\u06a9'})
 LABEL_BITS = {'recommended': 1, 'not_recommended': 2, 'no_idea': 4}
 BIT_LABELS = {value: key for key, value in LABEL_BITS.items()}
 
@@ -387,7 +387,7 @@ frozen_train = official_manifest[official_manifest['split'].eq('train')].copy()
 frozen_train_counts = frozen_train['recommendation_status'].value_counts().reindex(VALID_LABELS, fill_value=0)
 frozen_train_ratios = frozen_train_counts / len(frozen_train)
 
-# pass اول: audit کل داده و metadata گروه‌های candidate؛ متن کامل candidateها در RAM نگه داشته نمی‌شود.
+# First pass: audit all data and candidate-group metadata; full candidate texts are not retained in RAM.
 seen_ids: set[str] = set()
 candidate_meta: dict[str, list[int]] = {}
 scan_rows = valid_label_rows = duplicate_ids_removed = empty_text_rows = 0
@@ -448,7 +448,7 @@ clean_candidates['order_hash'] = clean_candidates['text_group_id'].map(
     lambda value: stable_unit_hash(value, SEED, 'group-order')
 )
 
-# quotaها عمداً minority-enriched هستند تا دادهٔ واقعی بیشتری برای کلاس‌های ضعیف فراهم شود.
+# Quotas intentionally enrich minority classes to provide more real data for weaker classes.
 target_class_counts = {
     label: int(round(target_train_rows * TARGET_TRAIN_CLASS_RATIOS[label]))
     for label in VALID_LABELS
@@ -476,8 +476,8 @@ def choose_groups_nearest(frame: pd.DataFrame, quota_rows: int) -> tuple[list[st
             total += int(row.rows)
         elif total >= quota_rows:
             break
-        # یک گروه بزرگ که overshoot بدی می‌دهد کنار گذاشته می‌شود؛ ممکن است گروه کوچک‌تری
-        # بعدتر quota را دقیق‌تر پر کند.
+        # Skip a large group that would overshoot badly; a smaller later group may
+        # fill the quota more precisely.
     return chosen, total
 
 
@@ -502,7 +502,7 @@ print(json.dumps({
 }, ensure_ascii=False, indent=2))
 
 # %% [markdown]
-# ## pass دوم: بازیابی دقیق رکوردهای انتخاب‌شده و اثبات قفل‌بودن splitها
+# ## Second pass: recover selected records and prove split locking
 
 # %%
 official_by_id = official_manifest.set_index('id')
@@ -638,7 +638,7 @@ sampling_audit = {
 }
 audit_path.write_text(json.dumps(sampling_audit, ensure_ascii=False, indent=2), encoding='utf-8')
 
-# آزادکردن اشیای بزرگ sampling پیش از ساخت مدل؛ فقط ستون‌های موردنیاز train/eval می‌مانند.
+# Release large sampling objects before model construction; retain only train/evaluation columns.
 model_columns = [
     'id', 'product_id', 'text_group_id', 'recommendation_status', 'text_full', 'label_id',
     'title', 'body', 'advantages', 'disadvantages',
@@ -651,7 +651,7 @@ del locked, source_check, new_rows, seen_ids, conflicting
 gc.collect()
 
 # %% [markdown]
-# ## Dataset، معیارها، fingerprint و resume
+# ## Dataset, metrics, fingerprint, and resume
 
 # %%
 class TextClassificationDataset(Dataset):
@@ -818,7 +818,7 @@ def resolve_passed_validation_summary() -> tuple[dict, Path] | tuple[None, None]
             'Multiple compatible validation summaries disagree on selected epoch. '
             'Set DIGIKALA_VALIDATION_SUMMARY_PATH explicitly.'
         )
-    # چند کپی یکسان (مثلاً working و input) بی‌ضرر است.
+    # Multiple identical copies, such as working and input, are harmless.
     return compatible[0]
 
 
@@ -898,8 +898,8 @@ def find_resume_checkpoint() -> Path | None:
 
 resume_checkpoint = find_resume_checkpoint()
 if resume_checkpoint is not None and Path('/kaggle/input') in resume_checkpoint.parents:
-    # Saved Version read-only است و trainer_state مسیر مطلق session قبلی را نگه می‌دارد.
-    # دو checkpoint سازگار را به همان ساختار local می‌آوریم و best path را patch می‌کنیم.
+    # Saved Versions are read-only, and trainer_state retains the prior session's absolute path.
+    # Copy the two compatible checkpoints into the same local structure and patch the best path.
     source_siblings = [
         path for path in resume_checkpoint.parent.glob('checkpoint-*')
         if path.is_dir() and checkpoint_fingerprint(path) == run_fingerprint
@@ -926,10 +926,10 @@ if resume_checkpoint is not None and Path('/kaggle/input') in resume_checkpoint.
 print('Resume checkpoint:', resume_checkpoint or 'none — fresh training')
 
 # %% [markdown]
-# ## فاز validation
+# ## Validation phase
 #
-# این بخش test را predict نمی‌کند. هشدار initializeشدن classifier طبیعی است؛ head سه‌کلاسه باید
-# روی task ما آموزش ببیند. همچنین `fix_mistral_regex` عمداً به tokenizer پاس داده نمی‌شود.
+# This phase never predicts test. The classifier initialization warning is expected; the three-class head must
+# be trained on this task. `fix_mistral_regex` is intentionally not passed to the tokenizer.
 
 # %%
 validation_summary = None
@@ -1035,11 +1035,11 @@ else:
     print('RUN_PHASE=final: validation training cell skipped.')
 
 # %% [markdown]
-# ## فاز final و test (فقط پس از PASS validation)
+# ## Final and test phase (only after validation PASS)
 #
-# این فاز summary اجرای validation را اجباری می‌کند، از checkpoint پایه روی `train + validation`
-# برای epoch انتخاب‌شده آموزش می‌دهد و test را یک بار ارزیابی می‌کند. برای promotion، فایل
-# prediction رسمی v1 نیز اجباری است تا paired bootstrap در سطح `text_group_id` انجام شود.
+# This phase requires the validation-run summary, trains from the base checkpoint on `train + validation`
+# for the selected epoch count, and evaluates test once. Promotion also requires the official
+# v1 prediction file so paired bootstrap can run at `text_group_id` level.
 
 # %%
 def load_validation_summary() -> tuple[dict, str]:
@@ -1076,13 +1076,13 @@ def load_v1_test_predictions() -> tuple[pd.DataFrame, str, str]:
                 pass
     if not found:
         raise FileNotFoundError(
-            'recommendation_test_predictions.csv نسخه v1 پیدا نشد. Dataset عمومی v1 را Add Input کنید.'
+            'The v1 recommendation_test_predictions.csv file was not found. Attach the public v1 Dataset.'
         )
     distinct_hashes = {item[2] for item in found}
     if len(distinct_hashes) > 1 and not V1_PREDICTIONS_OVERRIDE:
         raise RuntimeError(
-            'چند prediction artifact متفاوت برای v1 پیدا شد. '
-            'مسیر درست را در DIGIKALA_V1_PREDICTIONS_PATH مشخص کنید.'
+            'Multiple different v1 prediction artifacts were found. '
+            'Set the correct path in DIGIKALA_V1_PREDICTIONS_PATH.'
         )
     return found[0]
 
@@ -1167,7 +1167,7 @@ if RUN_PHASE == 'final':
     scores = torch.softmax(torch.tensor(logits), dim=-1).numpy()
     metrics = calculate_metrics(test_df['label_id'], prediction_ids)
 
-    # paired group bootstrap: در هر iteration همان گروه‌ها با همان multiplicity برای هر دو مدل.
+    # Paired group bootstrap: each iteration uses the same groups and multiplicities for both models.
     new_group_cm = confusion_by_group(test_df, prediction_ids)
     v1_group_cm = confusion_by_group(test_df, v1_prediction_ids)
     group_count = new_group_cm.shape[0]
@@ -1190,7 +1190,7 @@ if RUN_PHASE == 'final':
         'paired_probability_new_better': float(np.mean(paired_delta > 0)),
     }
 
-    # مدل inference تمیز ذخیره و reload می‌شود تا optimizer/state آموزشی وارد peak memory نشود.
+    # Save and reload a clean inference model so optimizer/training state does not affect peak memory.
     staging_model_dir = OUTPUT_DIR / 'best_transformer_encoder_10pct_staging'
     if staging_model_dir.exists():
         raise RuntimeError('Staging model directory already exists. Use a fresh session for final evaluation.')
@@ -1203,7 +1203,7 @@ if RUN_PHASE == 'final':
     gc.collect()
     torch.cuda.empty_cache()
 
-    # latency با پروتکل نسخه v1؛ شامل tokenize + transfer + forward.
+    # Measure latency with the v1 protocol: tokenize, transfer, and forward pass.
     device = torch.device('cuda')
     model = AutoModelForSequenceClassification.from_pretrained(
         staging_model_dir, local_files_only=True,
@@ -1330,7 +1330,7 @@ if RUN_PHASE == 'final':
         json.dumps(latency, ensure_ascii=False, indent=2), encoding='utf-8',
     )
 
-    # slice/error artifacts برای بخش چهارم ارزیابی پروژه.
+    # Slice and error artifacts support the project's final evaluation section.
     token_lengths = []
     for start in range(0, len(test_df), 512):
         encoded = tokenizer(
@@ -1482,18 +1482,18 @@ else:
     print('RUN_PHASE=validation: final/test cell skipped. Test predictions were not computed.')
 
 # %% [markdown]
-# ## خروجی‌هایی که باید نگه دارید
+# ## Outputs to retain
 #
-# بعد از فاز validation:
+# After the validation phase:
 #
 # - `recommendation_10pct_validation_summary.json`
 # - `recommendation_10pct_validation_predictions.csv`
 # - `recommendation_10pct_split_manifest.csv`
 # - `recommendation_10pct_data_audit.json`
 # - `best_transformer_encoder_10pct_validation/`
-# - پوشهٔ run/checkpoint برای resume (فقط نسخهٔ میانی)
+# - run/checkpoint directory for resume (intermediate version only)
 #
-# بعد از فاز final:
+# After the final phase:
 #
 # - `recommendation_10pct_evaluation_summary.json`
 # - `recommendation_10pct_test_predictions.csv`
@@ -1507,5 +1507,5 @@ else:
 # - `MANIFEST_10PCT.sha256`
 # - `best_transformer_encoder_10pct/`
 #
-# checkpointها را داخل Dataset انتشار نهایی نگذارید. آن‌ها فقط برای resume هستند. بلوک
-# `COPY THIS ... SUMMARY` را پس از هر فاز برای بررسی بفرستید.
+# Do not include checkpoints in the final release Dataset; they are only for resume. Retain the
+# `COPY THIS ... SUMMARY` block after each phase for review.

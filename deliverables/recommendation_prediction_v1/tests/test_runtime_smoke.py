@@ -25,7 +25,10 @@ class RuntimeSmokeTests(unittest.TestCase):
         from recommendation_prediction import RecommendationPredictor
 
         predictor = RecommendationPredictor(MODEL_DIR, device="cpu")
-        result = predictor.predict_one(title="عالی", body="از خرید راضی هستم")
+        result = predictor.predict_one(
+            title="\u0639\u0627\u0644\u06cc",
+            body="\u0627\u0632 \u062e\u0631\u06cc\u062f \u0631\u0627\u0636\u06cc \u0647\u0633\u062a\u0645",
+        )
         self.assertIn(result["label"], {"recommended", "not_recommended", "no_idea"})
         self.assertEqual(result["source"], "model_prediction")
         self.assertIs(result["scores_are_calibrated_probabilities"], False)

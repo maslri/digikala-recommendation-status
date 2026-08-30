@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900" role="img" aria-labelledby="title desc">
+  <title id="title">Final v2 confusion matrix on the locked test set</title>
+  <desc id="desc">Counts and row-normalized recalls for recommended, not recommended, and no idea labels over 9,662 test reviews.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#07111f"/><stop offset="1" stop-color="#102841"/></linearGradient>
+    <style>
+      text{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#eaf4ff}.eyebrow{font-size:16px;letter-spacing:2px;fill:#5eead4}.title{font-size:40px;font-weight:760}.sub{font-size:18px;fill:#bdd3e7}.axis{font-size:15px;fill:#bdd3e7;font-weight:650}.count{font-size:27px;font-weight:850}.pct{font-size:14px;fill:#d7f5ff}.diag1{fill:#0f766e}.diag2{fill:#176b82}.diag3{fill:#2876a3}.off1{fill:#153149}.off2{fill:#1b3e5b}.off3{fill:#24506d}.card{fill:#112a42;stroke:#315779;stroke-width:2}.metric{font-size:28px;font-weight:850;fill:#5eead4}.body{font-size:15px;fill:#bdd3e7}.tiny{font-size:13px;fill:#9db7cb}.arrow{font-size:20px;fill:#67e8f9}
+    </style>
+  </defs>
+  <rect width="1400" height="900" rx="28" fill="url(#bg)"/>
+  <text x="70" y="65" class="eyebrow">FINAL V2 · LOCKED TEST SET</text>
+  <text x="70" y="115" class="title">Confusion matrix: where the model is right and wrong</text>
+  <text x="70" y="150" class="sub">Rows are actual labels; columns are predicted labels. Percentages are normalized within each actual class.</text>
+
+  <text x="705" y="208" text-anchor="middle" class="axis">PREDICTED LABEL</text>
+  <text x="500" y="245" text-anchor="middle" class="axis">recommended</text><text x="735" y="245" text-anchor="middle" class="axis">not_recommended</text><text x="970" y="245" text-anchor="middle" class="axis">no_idea</text>
+  <text x="182" y="495" text-anchor="middle" class="axis" transform="rotate(-90 182 495)">ACTUAL LABEL</text>
+  <text x="360" y="340" text-anchor="end" class="axis">recommended</text><text x="360" y="510" text-anchor="end" class="axis">not_recommended</text><text x="360" y="680" text-anchor="end" class="axis">no_idea</text>
+
+  <g>
+    <rect x="390" y="270" width="220" height="145" rx="16" class="diag1"/><text x="500" y="335" text-anchor="middle" class="count">6,747</text><text x="500" y="369" text-anchor="middle" class="pct">88.64%</text>
+    <rect x="625" y="270" width="220" height="145" rx="16" class="off1"/><text x="735" y="335" text-anchor="middle" class="count">60</text><text x="735" y="369" text-anchor="middle" class="pct">0.79%</text>
+    <rect x="860" y="270" width="220" height="145" rx="16" class="off3"/><text x="970" y="335" text-anchor="middle" class="count">805</text><text x="970" y="369" text-anchor="middle" class="pct">10.58%</text>
+
+    <rect x="390" y="430" width="220" height="145" rx="16" class="off1"/><text x="500" y="495" text-anchor="middle" class="count">33</text><text x="500" y="529" text-anchor="middle" class="pct">3.37%</text>
+    <rect x="625" y="430" width="220" height="145" rx="16" class="diag2"/><text x="735" y="495" text-anchor="middle" class="count">753</text><text x="735" y="529" text-anchor="middle" class="pct">76.84%</text>
+    <rect x="860" y="430" width="220" height="145" rx="16" class="off2"/><text x="970" y="495" text-anchor="middle" class="count">194</text><text x="970" y="529" text-anchor="middle" class="pct">19.80%</text>
+
+    <rect x="390" y="590" width="220" height="145" rx="16" class="off2"/><text x="500" y="655" text-anchor="middle" class="count">215</text><text x="500" y="689" text-anchor="middle" class="pct">20.09%</text>
+    <rect x="625" y="590" width="220" height="145" rx="16" class="off2"/><text x="735" y="655" text-anchor="middle" class="count">171</text><text x="735" y="689" text-anchor="middle" class="pct">15.98%</text>
+    <rect x="860" y="590" width="220" height="145" rx="16" class="diag3"/><text x="970" y="655" text-anchor="middle" class="count">684</text><text x="970" y="689" text-anchor="middle" class="pct">63.93%</text>
+  </g>
+
+  <rect x="1130" y="270" width="210" height="145" rx="18" class="card"/><text x="1155" y="310" class="body">recommended recall</text><text x="1155" y="353" class="metric">88.64%</text><text x="1155" y="385" class="tiny">support: 7,612</text>
+  <rect x="1130" y="430" width="210" height="145" rx="18" class="card"/><text x="1155" y="470" class="body">not_recommended recall</text><text x="1155" y="513" class="metric">76.84%</text><text x="1155" y="545" class="tiny">support: 980</text>
+  <rect x="1130" y="590" width="210" height="145" rx="18" class="card"/><text x="1155" y="630" class="body">no_idea recall</text><text x="1155" y="673" class="metric">63.93%</text><text x="1155" y="705" class="tiny">support: 1,070</text>
+
+  <rect x="70" y="795" width="1270" height="65" rx="16" class="card"/><text x="95" y="825" class="body">Largest error path:</text><text x="245" y="825" class="axis">recommended</text><text x="360" y="825" class="arrow">→</text><text x="390" y="825" class="axis">no_idea</text><text x="485" y="825" class="metric">805</text><text x="570" y="825" class="body">reviews · Ambiguous recommendation intent remains the main challenge.</text>
+</svg>

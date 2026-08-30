@@ -221,7 +221,10 @@ class RecommendationPredictor:
         return self.predict_batch([record], batch_size=1)[0]
 
     def health_check(self) -> dict[str, Any]:
-        result = self.predict_one(title="آزمایش سلامت", body="کیفیت محصول خوب بود")
+        result = self.predict_one(
+            title="\u0622\u0632\u0645\u0627\u06cc\u0634 \u0633\u0644\u0627\u0645\u062a",
+            body="\u06a9\u06cc\u0641\u06cc\u062a \u0645\u062d\u0635\u0648\u0644 \u062e\u0648\u0628 \u0628\u0648\u062f",
+        )
         return {
             "status": "ok",
             "device": str(self.device),

@@ -2,26 +2,25 @@
   {
     "comment_id": "example-positive",
     "product_id": "product-1",
-    "title": "عالی بود",
-    "body": "کیفیتش خیلی خوبه و دوباره می‌خرم",
-    "advantages": "",
+    "title": "Excellent purchase",
+    "body": "The quality was very good and I would buy it again.",
+    "advantages": "Good quality",
     "disadvantages": ""
   },
   {
     "comment_id": "example-negative",
     "product_id": "product-2",
-    "title": "نخرید",
-    "body": "کیفیت خیلی بدی داشت و مرجوعش کردم",
+    "title": "Not recommended",
+    "body": "The quality was poor and I returned the product.",
     "advantages": "",
-    "disadvantages": ""
+    "disadvantages": "Poor quality"
   },
   {
     "comment_id": "example-neutral",
     "product_id": "product-3",
-    "title": "معمولی",
-    "body": "نسبت به قیمت بد نیست ولی انتظار بیشتری داشتم",
-    "advantages": "",
-    "disadvantages": ""
+    "title": "Average",
+    "body": "It was acceptable for the price, but I expected more.",
+    "advantages": "Reasonable price",
+    "disadvantages": "Average overall quality"
   }
 ]
-
