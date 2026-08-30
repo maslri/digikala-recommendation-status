@@ -121,7 +121,6 @@ Use release 4 for new integrations. Keep release 2 available for rollback.
 |-- docs/EVALUATION.md              # Standalone Section 3/4 evaluation report
 |-- notebooks/                      # Clean, reusable Kaggle notebooks
 |   `-- implemented/                # Kaggle-executed notebooks with outputs
-`-- STUDY/                          # Supporting course notes; not experiment outputs
 ```
 
 | Notebook | Purpose | Main output |
